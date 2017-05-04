@@ -15,35 +15,48 @@ Root namespace. Nothing to see here - move on!
 Hold all Adxstudio related functions. Used because I have my own other libraries under the xrt namespace.
 
 ### forms
-
 Common helpers when building Adxstudio Web Forms. 
 
 #### setVisible
 Makes a field visible (or not). You can pass in either a single field name OR an array of field names.
 example:
+
 Single field:
+```javascript
 xrt.adxstudio.forms.setVisible('firstname', false);
+```
 
 Multi fields:
+```javascript
 xrt.adxstudio.forms.setVisible(['firstname', 'lastname'], false);
+```
 
 If the field is the last or only visible field in the row, will also hide to prevent lots of whitespace.
 
 #### setDisabled
 Makes a field disabled (or not). You can pass in either a single field name OR an array of field names.
 example:
+
 Single field:
+```javascript
 xrt.adxstudio.forms.setDisabled('firstname', false);
+```
 
 Multi fields:
+```javascript
 xrt.adxstudio.forms.setDisabled(['firstname', 'lastname'], false);
+```
 
 #### setReadOnly
 Makes a field read only (or not). You can pass in either a single field name OR an array of field names.
 example:
+
 Single field:
+```javascript
 xrt.adxstudio.forms.setReadOnly('firstname', false);
+```
 
 Multi fields:
+```javascript
 xrt.adxstudio.forms.setReadOnly(['firstname', 'lastname'], false);
-
+```
