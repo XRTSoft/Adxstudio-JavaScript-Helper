@@ -4,7 +4,7 @@ xrt.adx = (function () {
 
     return {
         forms: {
-
+            showHide: function () { }
         }
     }
 })();
