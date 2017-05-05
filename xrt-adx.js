@@ -1,5 +1,26 @@
 var xrt = xrt || {};
 xrt.adxstudio = (function () {
+    var elems = [];
+    function saveElemDisplayType(elem, altId) {
+        for (var ctr = 0; ctr < elems.length; ctr++) {
+            var thisElem = elems[ctr];
+            if (thisElem.Id !== (elem.id === '' ? altId : elem.id)) {
+                continue;
+            }
+            thisElem.Display = elem.style.display;
+            return;
+        }
+        elems.push({ Id: elem.id == '' ? altId : elem.id, Display: elem.style.display });
+    }
+    function getPreviousDisplayValue(elem, altId) {
+        for (var ctr = 0; ctr < elems.length; ctr++) {
+            var thisElem = elems[ctr];
+            if (thisElem.Id !== (elem.id === '' ? altId : elem.id)) {
+                continue;
+            }
+            return thisElem.Display;
+        }
+    }
     function getArrayOfFieldNames(fn) {
         var arrayOfFieldNames = fn;
         if (typeof fn === 'string') {
@@ -27,8 +48,16 @@ xrt.adxstudio = (function () {
                     if (elem === null) {
                         return;
                     }
-                    elem.parentElement.parentElement.style.display = isVisible ? 'block' : 'none';
-                    elemLabel.parentElement.parentElement.style.display = isVisible ? 'block' : 'none';
+
+                    //save element display type if about to hide so it can be reset later
+                    if (!isVisible && elem.style.display !== 'none') {
+                        saveElemDisplayType(elem);
+                        saveElemDisplayType(elemLabel);
+                    }
+
+                    //show or hide
+                    elem.parentElement.parentElement.style.display = isVisible ? getPreviousDisplayValue(elem) : 'none';
+                    elemLabel.parentElement.parentElement.style.display = isVisible ? getPreviousDisplayValue(elem) : 'none';
 
                     //find parent (3rd row up, will be a tr)
                     var parentRow = document.getElementById(fn)
@@ -38,26 +67,35 @@ xrt.adxstudio = (function () {
 
                     //if not hiding, make sure parent row is visible; else check if need to hide row
                     if (isVisible) {
-                        parentRow.style.display = 'block';
+                        parentRow.style.display = getPreviousDisplayValue(parentRow, fieldName + '_parentrow');
                         continue;
                     } else {
                         //check for any other visible tds OR class zero-cell (zero cells are spacers and not required to be visible) 
                         //- if none found, hide the row to prevent whitespace
                         var hideParent = true;
                         var cells = parentRow.getElementsByTagName('td');
+                        var firstCellIsPickList = cells[0].className.indexOf('picklist') > -1;
                         for (var ctr = 0; ctr < cells.length; ctr++) {
+                            //zero-cells dont count
                             if (cells[ctr].className.indexOf('zero-cell') > -1) {
                                 continue;
                             }
 
-                            //Use visiblity test from jQuery - thanks jQuery!
+                            //use visiblity test from jQuery - thanks jQuery!
                             if (cells[ctr].offsetWidth === 0 && cells[ctr].offsetHeight === 0) {
                                 continue;
                             }
+
+                            //for picklists there is an additional cell to ignore
+                            if (firstCellIsPickList && cells[ctr].className.indexOf('clearfix cell') > -1) {
+                                continue;
+                            }
+
                             hideParent = false;
                             break;
                         }
-                        if (hideParent) {
+                        if (hideParent && parentRow.style.display !== 'none') {
+                            saveElemDisplayType(parentRow, fieldName + '_parentrow');
                             parentRow.style.display = 'none';
                         }
                     }
