@@ -108,36 +108,36 @@ xrt.adxstudio = (function () {
                         checkForLeftPadding(fieldName, hideParent, parentRow, cells);
                     }
                 }
-            }
-        },
-        setDisabled: function (fieldName, isDisabled) {
-            /// <summary>Disables or enables a field. Can pass a single field name as a string OR an array of field names.</summary>
-            /// <param name="fieldName" type="String">The name of the field to be disabled or enabled.</param>
-            /// <param name="isDisabled" type="Bool">Whether to make the field disabled (true) or enabled (false).</param>
+            },
+            setDisabled: function (fieldName, isDisabled) {
+                /// <summary>Disables or enables a field. Can pass a single field name as a string OR an array of field names.</summary>
+                /// <param name="fieldName" type="String">The name of the field to be disabled or enabled.</param>
+                /// <param name="isDisabled" type="Bool">Whether to make the field disabled (true) or enabled (false).</param>
 
-            //check if array has been passed or single string and then loop through each one
-            var arrayOfFieldNames = getArrayOfFieldNames(fieldName);
-            for (var fieldCtr = 0; fieldCtr < arrayOfFieldNames.length; fieldCtr++) {
-                var fn = arrayOfFieldNames[fieldCtr];
+                //check if array has been passed or single string and then loop through each one
+                var arrayOfFieldNames = getArrayOfFieldNames(fieldName);
+                for (var fieldCtr = 0; fieldCtr < arrayOfFieldNames.length; fieldCtr++) {
+                    var fn = arrayOfFieldNames[fieldCtr];
 
-                //find field and label and show/hide the parent td
-                var elem = document.getElementById(fn);
-                elem.disabled = isDisabled;
-            }
-        },
-        setReadOnly: function (fieldName, isReadOnly) {
-            /// <summary>Makes a field readonly or not. Can pass a single field name as a string OR an array of field names.</summary>
-            /// <param name="fieldName" type="String">The name of the field to be made readonly or not.</param>
-            /// <param name="isReadOnly" type="Bool">Whether to make the field read only (true) or not (false).</param>
+                    //find field and label and show/hide the parent td
+                    var elem = document.getElementById(fn);
+                    elem.disabled = isDisabled;
+                }
+            },
+            setReadOnly: function (fieldName, isReadOnly) {
+                /// <summary>Makes a field readonly or not. Can pass a single field name as a string OR an array of field names.</summary>
+                /// <param name="fieldName" type="String">The name of the field to be made readonly or not.</param>
+                /// <param name="isReadOnly" type="Bool">Whether to make the field read only (true) or not (false).</param>
 
-            //check if array has been passed or single string and then loop through each one
-            var arrayOfFieldNames = getArrayOfFieldNames(fieldName);
-            for (var fieldCtr = 0; fieldCtr < arrayOfFieldNames.length; fieldCtr++) {
-                var fn = arrayOfFieldNames[fieldCtr];
+                //check if array has been passed or single string and then loop through each one
+                var arrayOfFieldNames = getArrayOfFieldNames(fieldName);
+                for (var fieldCtr = 0; fieldCtr < arrayOfFieldNames.length; fieldCtr++) {
+                    var fn = arrayOfFieldNames[fieldCtr];
 
-                //find field and label and show/hide the parent td
-                var elem = document.getElementById(fn);
-                elem.readOnly = isReadOnly ? 'readonly' : '';
+                    //find field and label and show/hide the parent td
+                    var elem = document.getElementById(fn);
+                    elem.readOnly = isReadOnly ? 'readonly' : '';
+                }
             }
         }
     };
