@@ -59,3 +59,12 @@ Multi fields:
 ```javascript
 xrt.adxstudio.forms.setReadOnly(['firstname', 'lastname'], false);
 ```
+
+### getValue
+Retrieves the current value for a field. The returned value depends on the type of the field. Lookups return an object with id, type and display name.
+
+Single field:
+```javascript
+xrt.adxstudio.forms.getValue('firstname'); //returns 'Rob'
+xrt.adxstudio.forms.getValue('lookupid'); //returns object { id: 'guid', name: 'Rob', logicalName: 'contact' }
+```
