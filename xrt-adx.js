@@ -10,7 +10,7 @@ xrt.adxstudio = (function () {
             thisElem.Display = elem.style.display;
             return;
         }
-        elems.push({ Id: elem.id == '' ? altId : elem.id, Display: elem.style.display });
+        elems.push({ Id: elem.id === '' ? altId : elem.id, Display: elem.style.display });
     }
     function getPreviousDisplayValue(elem, altId) {
         for (var ctr = 0; ctr < elems.length; ctr++) {
@@ -42,6 +42,95 @@ xrt.adxstudio = (function () {
 
     return {
         forms: {
+            getValue: function (fieldName) {
+                /// <summary>Retrieves the value for a field. Can only pass a single field name.</summary>
+                /// <param name="fieldName" type="String">The name of the field to retrieve the value of.</param>
+                //Get element and type
+                var elem = document.getElementById(fieldName);
+                var type = elem === null || (elem.type === null || elem.type === undefined) ? '' : elem.type;
+                if (elem === null) {
+                    return null;
+                }
+
+                //Check what kind of element it is
+                var text = type.indexOf('text') > -1 && elem.className.indexOf('money') === -1;
+                var currency = type.indexOf('text') > -1 && elem.className.indexOf('money') > -1;
+                var lookupAsDropdown = elem.className.indexOf('lookup') > -1 && type.indexOf('select') > -1;
+                var lookupAsLookup = document.getElementById(fieldName + '_name') !== null && document.getElementById(fieldName + '_name').className.indexOf('lookup') > -1;
+                var picklist = elem.className.indexOf('picklist') > -1 && type.indexOf('select') > -1;
+                var picklistAsRadioBtns = elem.className.indexOf('picklist') > -1 && type.indexOf('select') === -1;
+                var booleanAsDropdown = elem.className.indexOf('boolean-dropdown') > -1 && type.indexOf('select') > -1;
+                var booleanAsRadioBtns = elem.className.indexOf('boolean-radio') > -1;
+                var datetime = elem.className.indexOf('datetime') > -1;
+                var checkbox = type.indexOf('checkbox') > -1;
+
+                //Check combinations of type and class name(s) to determine where the value will be found
+                if (lookupAsDropdown) {
+                    //This is a lookup rendered as a dropdown (select)
+                    return elem.value === '' ?
+                        null :
+                        {
+                            id: elem.options[elem.selectedIndex].value
+                        };
+                }
+                else if (lookupAsLookup) {
+                    //This is a lookup rendered as a textbox + lookup control
+                    return elem.value === '' ?
+                        null :
+                        {
+                            id: elem.value,
+                            name: document.getElementById(fieldName + '_name').value,
+                            logicalName: document.getElementById(fieldName + '_entityname').value
+                        };
+                }
+                else if (picklist || booleanAsDropdown) {
+                    //This is a picklist rendered as a dropdown or a picklist
+                    return booleanAsDropdown ?
+                        elem.options[elem.selectedIndex].value === '1' :
+                        elem.options[elem.selectedIndex].value;
+                }
+                else if (picklistAsRadioBtns || booleanAsRadioBtns) {
+                    //This is a picklist rendered as radio buttons
+                    var elems = null;
+                    if (typeof (document['querySelector']) === 'function' && typeof (document['querySelectorAll']) === 'function') {
+                        elems = document.querySelectorAll('*[id^="' + fieldName + '_"]');
+                    } else {
+                        var allElems = document.getElementsByTagName('*');
+                        for (var ctr = 0; ctr < allElems.length; ctr++) {
+                            if (allElems[ctr].type === 'radio' && allElems[ctr].id.indexOf(fieldName)) {
+                                elems.push(allElems[ctr]);
+                            }
+                        }
+                    }
+                    for (var elemCtr = 0; elemCtr < elems.length; elemCtr++) {
+                        if (elems[elemCtr].type === 'radio' && elems[elemCtr].checked) {
+                            return elem.className.indexOf('boolean-radio') > -1 ?
+                                elems[elemCtr].value === '1' :
+                                elems[elemCtr].value;
+                        }
+                    }
+                    return null;
+                }
+                else if (datetime) {
+                    //This is a date textbox
+                    return elem.value === null || elem.value === '' ?
+                        null :
+                        new Date(elem.value);
+                }
+                else if (checkbox) {
+                    //This is a checkbox
+                    return elem.checked;
+                }
+                else if (text && !currency) {
+                    //This is a text field
+                    return elem.value;
+                }
+                else if (currency) {
+                    //This is a currency field
+                    return parseInt(elem.value, 10);
+                }
+                return null;
+            },
             setVisible: function (fieldName, isVisible) {
                 /// <summary>Shows or hides a field and its label. Can pass a single field name as a string OR an array of field names.</summary>
                 /// <param name="fieldName" type="String">The name of the field to be shown or hidden.</param>
